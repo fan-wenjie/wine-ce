@@ -1,0 +1,25 @@
+#!/bin/sh
+script_path=$0
+if [ -h $script_path ]
+then
+    script_path=$(readlink $script_path)    
+fi
+
+if [ $# -lt 1 ] || [ "$1" = "--help" ]  ; then
+    echo "Usage: $script_path PROGRAM [ARGUMENTS...]   Run the specified program"
+    echo "       $script_path --help                   Display this help and exit"
+    echo "       $script_path --version                Output version information and exit"
+    exit 1;
+fi
+
+if [ $# -lt 1 ] || [ "$1" = "--version" ]  ; then
+    echo `$(dirname $script_path)/wine --version`
+    exit 1;
+fi
+
+current_path=`pwd`
+wine_dir=$(cd $(dirname $(dirname $script_path));pwd)
+export WINENTDLLPATH=$wine_dir/lib/wine/arm-unix/ntdll.so
+export WINEDLLPATH=$wine_dir/lib/wine
+cd $current_path
+$wine_dir/bin/qemu-i386 $wine_dir/lib/wine/i386-windows/qemuloader $@
