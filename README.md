@@ -1,7 +1,7 @@
 # Introduction 简介 
-Wine-CE (Chimera Edition) is a compatibility layer capable of running Windows applications on  Cross-architecture paltform of Linux. It is base on Wine Project and Qemu Project.
+Wine-CE (Chimera Edition, Cross-architecture Emulator) is a compatibility layer capable of running Windows applications on  Cross-architecture paltform of Linux. It is base on Wine Project and Qemu Project.
 
-Wine-CE (奇美拉架构) 是在不同指令集架构Linux系统上运行Windows程序的兼容层，它基于Wine项目和Qemu项目。
+Wine-CE (奇美拉架构, 跨指令架构模拟器) 是在不同指令集架构Linux系统上运行Windows程序的兼容层，它基于Wine项目和Qemu项目。
 
 # Architecture 架构
 
@@ -176,3 +176,12 @@ For specific steps, please refer to dxvk/README.md
 Optimize Video Audio
 
 优化视频和音频
+
+# Demo 演示视频
+Test Platform: Raspberrypi 400
+
+Test Program:
+
+Warcraft III:       https://www.bilibili.com/video/BV1qK411k7mu
+
+Sword and Fairy 3:  https://www.bilibili.com/video/BV1Kd4y157Lm
