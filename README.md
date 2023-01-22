@@ -110,7 +110,7 @@ sudo apt install libasound2-dev:armhf libgcc-11-dev:armhf libgstreamer-plugins-b
 
 ## Dowload Source 下载源码
 ```
-git clone https://gitee.com/fanwenjie/wine-ce.git
+git clone https://gitlab.com/wine-ce/wine-ce.git
 cd wine-ce
 git submodule init
 git submodule update
