@@ -1,0 +1,9 @@
+[submodule "wine"]
+	path = wine
+	url = https://gitee.com/fanwenjie/wine.git
+[submodule "qemu"]
+	path = qemu
+	url = https://gitee.com/fanwenjie/qemu.git
+[submodule "dxvk"]
+	path = dxvk
+	url = https://gitee.com/fanwenjie/dxvk.git
