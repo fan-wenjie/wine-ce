@@ -1,0 +1,50 @@
+#!/usr/bin/make -f
+
+# See debhelper(7) (uncomment to enable).
+# Output every command that modifies files on the build system.
+export DH_VERBOSE = 1
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all
+
+DEB_WINE_DIR=$(CURDIR)/debian/wine-ce/usr
+DEB_QEMU_DIR=$(CURDIR)/debian/build_qemu
+PE_ARCHES="i386,aarch64,x86_64"
+
+CONFIG_PRE=i386_CC="clang -fuse-ld=lld --target=i686-pc-windows" \
+		x86_64_CC="clang -fuse-ld=lld --target=x86_64-pc-windows" \
+		x86_64_UNIX_CC="clang -fuse-ld=lld --target=x86_64-pc-linux -I/usr/x86_64-linux-gnu/include" \
+		aarch64_CC="clang -fuse-ld=lld --target=aarch64-pc-windows" \
+		aarch64_UNIX_CC="clang -fuse-ld=lld --target=aarch64-pc-linux -I/usr/aarch64-linux-gnu/include -march=armv8+lse" \
+
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	cd $(CURDIR)/wine && echo $(CONFIG_PRE) ./configure --prefix="$(DEB_WINE_DIR)" --disable-tests --enable-archs=$(PE_ARCHES) 
+
+	exit 1
+
+override_dh_auto_build:
+	cd $(CURDIR)/wine && $(MAKE) -j$(shell nproc) 
+	mkdir -p $(DEB_QEMU_DIR) && cd $(DEB_QEMU_DIR) && CC=gcc CC_FOR_BUILD="$CC" CXX="$CC" HOST_CC="$CC" \
+		LDFLAGS="-Wl,-Ttext-segment=0x100000000 \
+		-Wl,-z,max-page-size=0x1000 -Wl,-Bstatic,-lglib-2.0 -Wl,-Bdynamic,-ldl" $(CURDIR)/qemu/configure --without-default-features \
+		--disable-fdt --disable-system --enable-ca11c0de --disable-rcu \
+		--target-list=x86_64-linux-user,aarch64-linux-user && ninja -j$(shell nproc)
+
+override_dh_auto_install:
+	cd $(CURDIR)/wine && $(MAKE) install
+
+execute_after_dh_install:
+	strip $(DEB_QEMU_DIR)/qemu-x86_64 -o $(DEB_WINE_DIR)/bin/qemu-x86_64
+	strip $(DEB_QEMU_DIR)/qemu-aarch64 -o $(DEB_WINE_DIR)/bin/qemu-aarch64
+	cd $(CURDIR) && chmod +x generate_scripts.sh && ./generate_scripts.sh  $(DEB_WINE_DIR)/bin/
+
+override_dh_makeshlibs:
+	# avoid unnecessary calls to ldconfig
+	dh_makeshlibs -n
+
+
+override_dh_auto_clean:
+	rm -rf $(DEB_QEMU_DIR)	
+	rm -rf $(DEB_WINE_DIR)
